@@ -1,70 +1,51 @@
 package fcu.pbiecs.springdemo.controller;
 
 import fcu.pbiecs.springdemo.model.Teacher;
+import fcu.pbiecs.springdemo.service.TeacherService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping("/api/teachers") // 定義路徑前綴
-@CrossOrigin("*")
+@CrossOrigin("*") // 允許所有來源的跨域請求
 @RestController // 處理HTTP請求的控制器
+@RequestMapping("/api/teachers") // 定義路徑前綴
 public class TeacherController {
-    private List<Teacher> teachers = new ArrayList<>();
-
-    public TeacherController() {
-        // 初始化一些教師資料
-        teachers.add(new Teacher(1, "Alice", "alice@o365.fcu.edu.tw", 30));
-        teachers.add(new Teacher(2, "David", "david@o365.fcu.edu.tw", 30));
-    }
+    @Autowired // 自動注入TeacherService，這樣就可以使用教師服務
+    private TeacherService teacherService;
 
     // 查詢所有教師資料
-    @RequestMapping
+    @GetMapping
     public List<Teacher> getTeachers() {
-        return teachers;
+        return teacherService.getAllTeachers();
     }
 
-    // 查詢特定指定id教師資料
+    // 查詢「指定」id教師資料
     @GetMapping("/{id}") // 完整路徑會是 /api/teachers/{id}
-    public Teacher getTeacher(int id) {
-        for (Teacher teacher : teachers) {
-            if (teacher.getTeacherId() == id) {
-                return teacher;
-            }
-        }
-        return null; // 如果找不到，返回null
+    public Teacher getTeacher(@PathVariable int id) {
+        return teacherService.getTeacherById(id);
     }
 
     // 刪除特定教師資料
-    @DeleteMapping("/{id}") // 完整路徑會是 /api/teachers/{id}
+    @DeleteMapping("/{id}") // 完整路徑會是 /api/teachers
     public String deleteTeacher(@PathVariable int id) {
-        for (Teacher teacher : teachers) {
-            if (teacher.getTeacherId() == id) {
-                teachers.remove(teacher);
-                return "Teacher with ID " + id + " deleted successfully.";
-            }
+        boolean delete = teacherService.deleteTeacher(id);
+        if(delete){
+            return "Teacher with ID " + id + " deleted successfully.";
+        } else {
+            return "Teacher with ID " + id + " not found.";
         }
-        return "Teacher with ID " + id + " not found.";
     }
 
     // 新增教師資料
     @PostMapping
     public Teacher createTeacher(@RequestBody Teacher teacher) {
-        teacher.setTeacherId(teachers.get(teachers.size() - 1).getTeacherId() + 1); // 設定新的教師ID為目前最後一個教師ID加1
-        teachers.add(teacher); // 將新教師加入列表
-        return teacher; // 返回新增的教師資料
+        return teacherService.createTeacher(teacher);
     }
 
     // 更新教師資料
-    @PutMapping("/{id}") // 完整路徑會是 /api/teachers
+    @PutMapping("/{id}")
     public Teacher updateTeacher(@PathVariable int id, @RequestBody Teacher updatedTeacher) {
-        for (int i = 0; i < teachers.size(); i++) {
-            if (teachers.get(i).getTeacherId() == id) {
-                updatedTeacher.setTeacherId(id); // 確保更新的教師ID與路徑中的ID一致
-                teachers.set(i, updatedTeacher); // 更新教師資料
-                return updatedTeacher; // 返回更新後的教師資料
-            }
-        }
-        return null; // 如果找不到，返回null
+        return teacherService.updateTeacher(id, updatedTeacher);
     }
 }

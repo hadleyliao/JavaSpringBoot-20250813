@@ -20,7 +20,7 @@ public class StudentController {
         return studentService.getAllStudents();
     }
 
-    // 查詢特定指定id學生資料
+    // 查詢「指定」id學生資料
     @GetMapping("/{id}") // 完整路徑會是 /api/students
     public Student getStudent(@PathVariable int id) {
         return studentService.getStudentById(id);
@@ -105,5 +105,4 @@ public class StudentController {
         return null; // 如果找不到學生，返回null
     }
     */
-
 }

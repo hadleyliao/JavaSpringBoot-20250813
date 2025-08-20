@@ -1,7 +1,7 @@
-# Get 方法
+# Get 方法 查詢「全部」
 http://localhost:8080/api/students
 
-# Get 方法 查詢id
+# Get 方法 查詢「指定id」
 http://localhost:8080/api/students/1
 
 # Delete 方法 刪除id
